@@ -57,7 +57,14 @@ def makeLogin(username,password):
 
 def jsonReply(conn):
 	l = int.from_bytes(conn.read(EPP_PKT_LEN_BYTES),NETWORK_BYTE_ORDER)
-	return xmltodict.parse(conn.read(l))
+	js = xmltodict.parse(conn.read(l))
+	ret = -1
+	if ("epp" in js and
+		"response" in js["epp"] and
+		"result" in js["epp"]["response"] and
+		"@code" in js["epp"]["response"]["result"]):
+		ret = js["epp"]["response"]["result"]["@code"]
+	return ret, js
 
 
 
@@ -98,17 +105,31 @@ conn.connect((args.server, EPP_PORT))
 
 ## print("SSL established. Peer: {}".format(conn.getpeercert()))
 
+print("===========> Greeting")
+ret, js = jsonReply(conn)
+print(json.dumps(js,indent=4))
+if "epp" not in js or "greeting" not in js["epp"]:
+	print("ERROR: Incorrect greeting, but who cares")
+else:
+	print("===========> Greeting --- OK")
+
 print("===========> Sending: Login")
 conn.send(makeLogin(args.username,args.password))
-print(json.dumps(jsonReply(conn),indent=4))
+ret, js = jsonReply(conn)
+print("RET: ",ret,"\n",json.dumps(js,indent=4))
 
-print("===========> Sending: Poll")
-conn.send(makeXML({ "poll": { "@op":"req" }, "clTRID":"RQ-9375-1363779375950397" }))
-print(json.dumps(jsonReply(conn),indent=4))
+
+if args.json:
+	print("===========> Sending: JSON")
+	conn.send(makeXML(json.loads(args.json)))
+	ret, js = jsonReply(conn)
+	print("RET: ",ret,"\n",json.dumps(js,indent=4))
+
 
 print("===========> Sending: Logout")
 conn.send(makeXML({ "logout": None, "clTRID":"RQ-9375-1363779375950397" }))
-print(json.dumps(jsonReply(conn),indent=4))
+ret, js = jsonReply(conn)
+print("RET: ",ret,"\n",json.dumps(js,indent=4))
 
 print("Closing connection")
 conn.close()
