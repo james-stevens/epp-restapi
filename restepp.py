@@ -7,13 +7,41 @@ import os
 import sys
 import socket
 import ssl
+import time
+
+from flask import Flask
+from flask import request
+from flask import Response
+
+
+client_cert = '/opt/pems/jrcs.net.pem'
+client_key = '/opt/pems/jrcs.net.pem'
+
+app = Flask("EPP/REST/API")
+conn = None
+clTRID = None
+idSeq = 0
 
 EPP_PORT = 700
 
 EPP_PKT_LEN_BYTES = 4
 NETWORK_BYTE_ORDER = "big"
 
+class Empty:
+	pass
+
+
+def hexId(i):
+	return hex(int(i))[2:].upper()
+
+
+
 def makeXML(cmd):
+	global idSeq
+	global clTRID
+	idSeq = idSeq + 1
+	clTRID = "ID:" + hexId(time.time()) + "_" + hexId(os.getpid()) + "_" + hexId(idSeq)
+	cmd["clTRID"] = clTRID
 	xml = xmltodict.unparse( {
 		"epp": {
 			"@xmlns": "urn:iana:xml:ns:epp",
@@ -58,79 +86,78 @@ def makeLogin(username,password):
 def jsonReply(conn):
 	l = int.from_bytes(conn.read(EPP_PKT_LEN_BYTES),NETWORK_BYTE_ORDER)
 	js = xmltodict.parse(conn.read(l))
-	ret = -1
-	if ("epp" in js and
-		"response" in js["epp"] and
-		"result" in js["epp"]["response"] and
-		"@code" in js["epp"]["response"]["result"]):
-		ret = js["epp"]["response"]["result"]["@code"]
+	ret = 9999
+	if "epp" in js:
+		js = js["epp"]
+
+	if "@xmlns" in js:
+		del js["@xmlns"]
+
+	if "greeting" in js:
+		return 1000,js
+
+	if "response" in js:
+		r = js["response"]
+
+		if "result" in r and "@code" in r["result"]:
+			ret = int(js["response"]["result"]["@code"])
+
+		if "trID" in r and "clTRID" in r["trID"]:
+			if r["trID"]["clTRID"] == clTRID:
+				del js["response"]["trID"]
+			else:
+				ret = 9990
+		
 	return ret, js
 
 
 
-parser = argparse.ArgumentParser(description='EPP REST/API Proxy')
-parser.add_argument("-s", '--server', help='EPP Server')
-parser.add_argument("-u", '--username', help='Username')
-parser.add_argument("-p", '--password', help='Password')
-parser.add_argument("-j", '--json', help='JSON to convert to XML')
-args = parser.parse_args()
+@app.route('/epp/api/v1.0/finish', methods=['GET'])
+def closeEPP():
+	global conn
+	conn.send(makeXML({ "logout": None, "clTRID":"RQ-9375-1363779375950397" }))
+	ret, js = jsonReply(conn)
+	Response(js)
+	print("===========> Logout",ret)
+	conn.close()
+	conn = None
 
-if args.server is None and "EPP_SERVER" in os.environ:
+
+
+@app.route('/epp/api/v1.0/request', methods=['POST'])
+def eppJSON():
+	global conn
+	conn.send(makeXML(request.json))
+	ret, js = jsonReply(conn)
+	print("===========> User query:",ret)
+	return js
+
+
+
+if __name__ == "__main__":
+
+	args = Empty()
 	args.server = os.environ["EPP_SERVER"]
-
-if args.username is None and "EPP_USERNAME" in os.environ:
 	args.username = os.environ["EPP_USERNAME"]
-
-if args.password is None and "EPP_PASSWORD" in os.environ:
 	args.password = os.environ["EPP_PASSWORD"]
 
-if args.username is None or args.password is None or args.server is None:
-	print("ERROR: Either server, username or password has not been specified")
-	sys.exit(1)
+	if args.username is None or args.password is None or args.server is None:
+		print("ERROR: Either server, username or password has not been specified")
+		sys.exit(1)
 
+	context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+	context.load_cert_chain(certfile=client_cert, keyfile=client_key)
 
-# print(makeXML({"poll": { "@op":"req" }, "clTRID":"RQ-9375-1363779375950397" }))
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	conn = context.wrap_socket(s, server_side=False, server_hostname=args.server)
 
-server_sni_hostname = 'epp.jrcs.net'
-client_cert = '/opt/pems/jrcs.net.pem'
-client_key = '/opt/pems/jrcs.net.pem'
+	conn.connect((args.server, EPP_PORT))
 
-context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-context.load_cert_chain(certfile=client_cert, keyfile=client_key)
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-conn = context.wrap_socket(s, server_side=False, server_hostname=server_sni_hostname)
-
-conn.connect((args.server, EPP_PORT))
-
-## print("SSL established. Peer: {}".format(conn.getpeercert()))
-
-print("===========> Greeting")
-ret, js = jsonReply(conn)
-print(json.dumps(js,indent=4))
-if "epp" not in js or "greeting" not in js["epp"]:
-	print("ERROR: Incorrect greeting, but who cares")
-else:
-	print("===========> Greeting --- OK")
-
-print("===========> Sending: Login")
-conn.send(makeLogin(args.username,args.password))
-ret, js = jsonReply(conn)
-print("RET: ",ret,"\n",json.dumps(js,indent=4))
-
-
-if args.json:
-	print("===========> Sending: JSON")
-	conn.send(makeXML(json.loads(args.json)))
 	ret, js = jsonReply(conn)
-	print("RET: ",ret,"\n",json.dumps(js,indent=4))
+	print("===========> Greeting",ret)
 
+	conn.send(makeLogin(args.username,args.password))
+	ret, js = jsonReply(conn)
+	print("===========> Login",ret)
 
-print("===========> Sending: Logout")
-conn.send(makeXML({ "logout": None, "clTRID":"RQ-9375-1363779375950397" }))
-ret, js = jsonReply(conn)
-print("RET: ",ret,"\n",json.dumps(js,indent=4))
-
-print("Closing connection")
-conn.close()
-
+	app.run()
