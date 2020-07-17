@@ -5,6 +5,7 @@ import xmltodict
 import argparse
 import os
 import sys
+import syslog
 import socket
 import ssl
 import time
@@ -14,6 +15,8 @@ from flask import request
 from flask import Response
 
 client_pem = "certkey.pem"
+
+syslogFacility = syslog.LOG_LOCAL6
 
 app = Flask("EPP/REST/API")
 conn = None
@@ -118,7 +121,7 @@ def xmlReques(js):
 def closeEPP():
     ret, js = xmlReques({"logout": None})
     Response(js)
-    print("===========> Logout", ret)
+    syslog.syslog("Logout {}".format(ret))
     conn.close()
     conn = None
     ## want to terminate/exit here, not sure how from Flask
@@ -128,11 +131,13 @@ def closeEPP():
 def eppJSON():
     global conn
     ret, js = xmlReques(request.json)
-    print("===========> User query:", ret)
+    syslog.syslog("User query: {}".format(ret))
     return js
 
 
 if __name__ == "__main__":
+
+    syslog.openlog(logoption=syslog.LOG_PID, facility=syslogFacility)
 
     args = Empty()
     args.server = os.environ["EPP_SERVER"]
@@ -156,9 +161,9 @@ if __name__ == "__main__":
     conn.connect((args.server, EPP_PORT))
 
     ret, js = jsonReply(conn, None)
-    print("===========> Greeting", ret)
+    syslog.syslog("Greeting {}".format(ret))
 
     ret, js = xmlReques(makeLogin(args.username, args.password))
-    print("===========> Login", ret)
+    syslog.syslog("Login {}".format(ret))
 
     app.run()
