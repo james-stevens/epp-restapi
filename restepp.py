@@ -127,11 +127,19 @@ def closeEPP():
     ## want to terminate/exit here, not sure how from Flask
 
 
+def firstDict(thisDict):
+    for d in thisDict:
+        return d
+
 @app.route('/epp/api/v1.0/request', methods=['POST'])
 def eppJSON():
     global conn
+    t1 = firstDict(request.json)
+    t2 = firstDict(request.json[t1])
+    if t2[0] == "@":
+        t2 = request.json[t1][t2]
     ret, js = xmlReques(request.json)
-    syslog.syslog("User query: {}".format(ret))
+    syslog.syslog("User request: {} asked '{}/{}' -> {}".format(request.remote_addr,t1,t2,ret))
     return js
 
 
