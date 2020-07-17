@@ -1,0 +1,3 @@
+#! /bin/sh
+
+docker run --read-only --env-file=epp_login_env -it -p 800:800 epprest /sbin/init

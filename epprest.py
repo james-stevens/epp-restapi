@@ -1,8 +1,10 @@
 #! /usr/bin/python3
+# (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
+# Alternative license arrangements are possible, contact me for more information
+
 
 import json
 import xmltodict
-import argparse
 import os
 import sys
 import syslog
@@ -14,11 +16,11 @@ from flask import Flask
 from flask import request
 from flask import Response
 
-client_pem = "certkey.pem"
+client_pem = "/opt/certkey.pem"
 
 syslogFacility = syslog.LOG_LOCAL6
 
-app = Flask("EPP/REST/API")
+application = Flask("EPP/REST/API")
 conn = None
 idSeq = 0
 
@@ -117,7 +119,7 @@ def xmlReques(js):
     return jsonReply(conn, clTRID)
 
 
-@app.route('/epp/api/v1.0/finish', methods=['GET'])
+@application.route('/epp/api/v1.0/finish', methods=['GET'])
 def closeEPP():
     ret, js = xmlReques({"logout": None})
     Response(js)
@@ -131,7 +133,7 @@ def firstDict(thisDict):
     for d in thisDict:
         return d
 
-@app.route('/epp/api/v1.0/request', methods=['POST'])
+@application.route('/epp/api/v1.0/request', methods=['POST'])
 def eppJSON():
     global conn
     t1 = firstDict(request.json)
@@ -143,35 +145,41 @@ def eppJSON():
     return js
 
 
-if __name__ == "__main__":
+
+@application.before_first_request
+def start_up_code():
+
+    global conn
 
     syslog.openlog(logoption=syslog.LOG_PID, facility=syslogFacility)
 
-    args = Empty()
-    args.server = os.environ["EPP_SERVER"]
-    args.username = os.environ["EPP_USERNAME"]
-    args.password = os.environ["EPP_PASSWORD"]
-
-    if args.username is None or args.password is None or args.server is None:
-        print(
+    if ("EPP_SERVER" not in os.environ or "EPP_USERNAME" not in os.environ or "EPP_PASSWORD" not in os.environ):
+        syslog.syslog(
             "ERROR: Either server, username or password has not been specified"
         )
-        sys.exit(1)
+    else:
+        args = Empty()
 
-    context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-    context.load_cert_chain(client_pem)
+        args.server = os.environ["EPP_SERVER"]
+        args.username = os.environ["EPP_USERNAME"]
+        args.password = os.environ["EPP_PASSWORD"]
+        
+        context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+        context.load_cert_chain(client_pem)
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    conn = context.wrap_socket(s,
-                               server_side=False,
-                               server_hostname=args.server)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        conn = context.wrap_socket(s,
+                                   server_side=False,
+                                   server_hostname=args.server)
 
-    conn.connect((args.server, EPP_PORT))
+        conn.connect((args.server, EPP_PORT))
 
-    ret, js = jsonReply(conn, None)
-    syslog.syslog("Greeting {}".format(ret))
+        ret, js = jsonReply(conn, None)
+        syslog.syslog("Greeting {}".format(ret))
 
-    ret, js = xmlReques(makeLogin(args.username, args.password))
-    syslog.syslog("Login {}".format(ret))
+        ret, js = xmlReques(makeLogin(args.username, args.password))
+        syslog.syslog("Login {}".format(ret))
 
-    app.run()
+
+if __name__ == "__main__":
+        application.run()

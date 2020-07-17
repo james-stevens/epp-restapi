@@ -1,0 +1,6 @@
+# (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
+# Alternative license arrangements possible, contact me for more information
+
+::respawn:/sbin/syslogd -n -O -
+::respawn:/opt/start_nginx
+::respawn:/opt/start_epprest
