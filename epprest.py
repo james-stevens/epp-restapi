@@ -12,15 +12,13 @@ import socket
 import ssl
 import time
 
-from flask import Flask
-from flask import request
-from flask import Response
+import flask
 
 client_pem = "/opt/certkey.pem"
 
 syslogFacility = syslog.LOG_LOCAL6
 
-application = Flask("EPP/REST/API")
+application = flask.Flask("EPP/REST/API")
 conn = None
 idSeq = 0
 
@@ -32,6 +30,13 @@ NETWORK_BYTE_ORDER = "big"
 
 class Empty:
     pass
+
+
+def abort(err_no, message):
+    response = flask.jsonify({'error': message})
+    response.status_code = err_no
+    return response
+
 
 
 def hexId(i):
@@ -85,8 +90,14 @@ def makeLogin(username, password):
 
 
 def jsonReply(conn, clTRID):
-    l = int.from_bytes(conn.read(EPP_PKT_LEN_BYTES), NETWORK_BYTE_ORDER)
-    js = xmltodict.parse(conn.read(l))
+    buf = conn.recv(EPP_PKT_LEN_BYTES)
+    if len(buf) == 0:
+        return None, None
+    l = int.from_bytes(buf, NETWORK_BYTE_ORDER)
+    buf = conn.recv(l)
+    if len(buf) == 0:
+        return None, None
+    js = xmltodict.parse(buf)
     ret = 9999
     if "epp" in js:
         js = js["epp"]
@@ -112,16 +123,19 @@ def jsonReply(conn, clTRID):
     return ret, js
 
 
-def xmlReques(js):
+def xmlRequest(js):
     global conn
     clTRID, xml = makeXML(js)
-    conn.send(xml)
-    return jsonReply(conn, clTRID)
+    try:
+        conn.sendall(xml)
+        return jsonReply(conn, clTRID)
+    except:
+        return None, None
 
 
 @application.route('/epp/api/v1.0/finish', methods=['GET'])
 def closeEPP():
-    ret, js = xmlReques({"logout": None})
+    ret, js = xmlRequest({"logout": None})
     Response(js)
     syslog.syslog("Logout {}".format(ret))
     conn.close()
@@ -136,18 +150,38 @@ def firstDict(thisDict):
 @application.route('/epp/api/v1.0/request', methods=['POST'])
 def eppJSON():
     global conn
-    t1 = firstDict(request.json)
-    t2 = firstDict(request.json[t1])
+    if conn is None:
+        connectToEPP()
+        if conn is None:
+            return abort(400, "Failed to connect to EPP Server")
+
+    t1 = firstDict(flask.request.json)
+    t2 = firstDict(flask.request.json[t1])
     if t2[0] == "@":
-        t2 = request.json[t1][t2]
-    ret, js = xmlReques(request.json)
-    syslog.syslog("User request: {} asked '{}/{}' -> {}".format(request.remote_addr,t1,t2,ret))
+        t2 = flask.request.json[t1][t2]
+
+    j = flask.request.json
+    ret, js = xmlRequest(j)
+
+    if ret is None or js is None:
+        conn.close()
+        conn = None
+        connectToEPP()
+        if conn is None:
+            return abort(400, "Failed to connect to EPP Server")
+        ret, js = xmlRequest(j)
+        if ret is None or js is None:
+            conn.close()
+            conn = None
+            return abort(400, "Lost connection to EPP Server")
+
+    syslog.syslog("User request: {} asked '{}/{}' -> {}".format(flask.request.remote_addr,t1,t2,ret))
+
     return js
 
 
 
-@application.before_first_request
-def start_up_code():
+def connectToEPP():
 
     global conn
 
@@ -163,7 +197,7 @@ def start_up_code():
         args.server = os.environ["EPP_SERVER"]
         args.username = os.environ["EPP_USERNAME"]
         args.password = os.environ["EPP_PASSWORD"]
-        
+
         context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
         context.load_cert_chain(client_pem)
 
@@ -172,12 +206,19 @@ def start_up_code():
                                    server_side=False,
                                    server_hostname=args.server)
 
-        conn.connect((args.server, EPP_PORT))
+        syslog.syslog("Connecting to EPP Server: {}".format(args.server))
+        try:
+            conn.connect((args.server, EPP_PORT))
+            conn.setblocking(True)
+        except:
+            conn.close()
+            conn = None
+            return
 
         ret, js = jsonReply(conn, None)
         syslog.syslog("Greeting {}".format(ret))
 
-        ret, js = xmlReques(makeLogin(args.username, args.password))
+        ret, js = xmlRequest(makeLogin(args.username, args.password))
         syslog.syslog("Login {}".format(ret))
 
 
