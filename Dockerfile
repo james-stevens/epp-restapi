@@ -16,6 +16,7 @@ RUN pip install --upgrade pip
 RUN pip install gunicorn
 RUN pip install Flask
 RUN pip install xmltodict
+RUN pip install apscheduler
 
 RUN rmdir /var/lib/nginx/tmp /var/log/nginx 
 RUN ln -s /dev/shm /var/lib/nginx/tmp

@@ -11,6 +11,7 @@ import syslog
 import socket
 import ssl
 import time
+import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
 
@@ -43,6 +44,19 @@ if jobInterval > 0:
     scheduler = BackgroundScheduler(timezone=utc)
     scheduler.start(paused=True)
     job = scheduler.add_job(keepAlive, 'interval', minutes=jobInterval, id='keepAlive')
+
+
+def gracefulExit():
+    global conn
+    if conn is None:
+        return
+    ret, js = xmlRequest({"logout": None})
+    flask.Response(js)
+    syslog.syslog("Logout {}".format(ret))
+    conn.close()
+    sys.exit(0)
+
+atexit.register(gracefulExit)
 
 
 class Empty:
@@ -161,12 +175,7 @@ def xmlRequest(js):
 
 @application.route('/epp/api/v1.0/finish', methods=['GET'])
 def closeEPP():
-    ret, js = xmlRequest({"logout": None})
-    Response(js)
-    syslog.syslog("Logout {}".format(ret))
-    conn.close()
-    conn = None
-    ## want to terminate/exit here, not sure how from Flask
+    gracefulExit()
 
 
 def firstDict(thisDict):
