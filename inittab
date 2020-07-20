@@ -2,5 +2,6 @@
 # Alternative license arrangements possible, contact me for more information
 
 ::respawn:/sbin/syslogd -n -O -
+::respawn:/opt/start_epprest 1
+::respawn:/opt/start_epprest 2
 ::respawn:/opt/start_nginx
-::respawn:/opt/start_epprest

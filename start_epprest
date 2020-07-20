@@ -2,5 +2,7 @@
 # (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
 # Alternative license arrangements are possible, contact me for more information
 
+session="${1}"
+
 cd /opt
-exec gunicorn --bind unix:/ram/epprest.sock epprest
+exec gunicorn --bind unix:/ram/epprest_${session}.sock epprest

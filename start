@@ -1,0 +1,20 @@
+#! /bin/sh
+# (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
+# Alternative license arrangements possible, contact me for more information
+
+{
+echo "::respawn:/sbin/syslogd -n -O -"
+
+x=0
+while test ${x} -lt ${EPP_SESSIONS}
+    do
+        x=$(expr ${x} + 1)
+        echo "::respawn:/opt/start_epprest ${x}"
+    done
+
+echo "::respawn:/opt/start_nginx"
+
+} > /ram/inittab
+
+
+exec /sbin/init

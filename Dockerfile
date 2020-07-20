@@ -22,9 +22,12 @@ RUN ln -s /dev/shm /var/lib/nginx/tmp
 RUN ln -s /dev/shm /var/log/nginx
 RUN ln -s /dev/shm /run/nginx
 
-COPY start_epprest start_nginx epprest.py /opt/
-COPY certkey.pem nginx_ssl.conf /etc/nginx/
-COPY inittab /etc/
-RUN ln -s /etc/nginx/certkey.pem /opt/certkey.pem
+COPY start start_epprest start_nginx /opt/
+COPY certkey.pem /etc/nginx/
+COPY certkey.pem /opt
+RUN rm -f /etc/inittab
+RUN ln -s /ram/inittab /etc/inittab
+RUN ln -s /ram/nginx_ssl.conf /etc/nginx/nginx_ssl.conf
 
+COPY epprest.py /opt/
 RUN python3 -m compileall /opt/
