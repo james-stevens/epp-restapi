@@ -11,6 +11,8 @@ import syslog
 import socket
 import ssl
 import time
+from apscheduler.schedulers.background import BackgroundScheduler
+from pytz import utc
 
 import flask
 
@@ -26,6 +28,21 @@ EPP_PORT = 700
 
 EPP_PKT_LEN_BYTES = 4
 NETWORK_BYTE_ORDER = "big"
+
+jobInterval = 0
+if "EPP_KEEPALIVE" in os.environ:
+    jobInterval = int(os.environ["EPP_KEEPALIVE"])
+
+
+def keepAlive():
+    jsonRequest({"hello":None},"keepAlive")
+
+
+scheduler = None
+if jobInterval > 0:
+    scheduler = BackgroundScheduler(timezone=utc)
+    scheduler.start(paused=True)
+    job = scheduler.add_job(keepAlive, 'interval', minutes=jobInterval, id='keepAlive')
 
 
 class Empty:
@@ -48,13 +65,20 @@ def makeXML(cmd):
     idSeq = idSeq + 1
     clTRID = "ID:" + hexId(time.time()) + "_" + hexId(
         os.getpid()) + "_" + hexId(idSeq)
-    cmd["clTRID"] = clTRID
+
+    verb = "command"
+    if "hello" in cmd:
+        verb = "hello"
+        cmd = None
+    else:
+        cmd["clTRID"] = clTRID
+
     xml = xmltodict.unparse({
         "epp": {
             "@xmlns": "urn:iana:xml:ns:epp",
             "@xmlns:xsi": "http://www.w3.org/2000/10/XMLSchema-instance",
             "@xsi:schemaLocation": "urn:iana:xml:ns:epp epp.xsd",
-            "command": cmd
+            verb: cmd
         }
     })
     return clTRID, ((EPP_PKT_LEN_BYTES + len(xml)).to_bytes(
@@ -123,6 +147,7 @@ def jsonReply(conn, clTRID):
     return ret, js
 
 
+
 def xmlRequest(js):
     global conn
     clTRID, xml = makeXML(js)
@@ -131,6 +156,7 @@ def xmlRequest(js):
         return jsonReply(conn, clTRID)
     except:
         return None, None
+
 
 
 @application.route('/epp/api/v1.0/finish', methods=['GET'])
@@ -145,23 +171,31 @@ def closeEPP():
 
 def firstDict(thisDict):
     for d in thisDict:
-        return d
+        return d.lower()
 
-@application.route('/epp/api/v1.0/request', methods=['POST'])
-def eppJSON():
+
+def jsonRequest(in_js,addr):
     global conn
+    global scheduler
+
     if conn is None:
         connectToEPP()
         if conn is None:
             return abort(400, "Failed to connect to EPP Server")
 
-    t1 = firstDict(flask.request.json)
-    t2 = firstDict(flask.request.json[t1])
-    if t2[0] == "@":
-        t2 = flask.request.json[t1][t2]
+    t1 = firstDict(in_js)
+    if t1 == "hello":
+        t2="hello"
+    else:
+        t2 = firstDict(in_js[t1])
+        if t2[0] == "@":
+            t2 = in_js[t1][t2]
 
-    j = flask.request.json
-    ret, js = xmlRequest(j)
+    if jobInterval > 0:
+        scheduler.reschedule_job('keepAlive', trigger='interval', minutes=jobInterval)
+        scheduler.resume()
+
+    ret, js = xmlRequest(in_js)
 
     if ret is None or js is None:
         conn.close()
@@ -175,15 +209,22 @@ def eppJSON():
             conn = None
             return abort(400, "Lost connection to EPP Server")
 
-    syslog.syslog("User request: {} asked '{}/{}' -> {}".format(flask.request.remote_addr,t1,t2,ret))
+    syslog.syslog("User request: {} asked '{}/{}' -> {}".format(addr,t1,t2,ret))
 
     return js
+
+
+
+@application.route('/epp/api/v1.0/request', methods=['POST'])
+def eppJSON():
+    return jsonRequest(flask.request.json,flask.request.remote_addr)
 
 
 
 def connectToEPP():
 
     global conn
+    global scheduler
 
     syslog.openlog(logoption=syslog.LOG_PID, facility=syslogFacility)
 
@@ -220,6 +261,9 @@ def connectToEPP():
 
         ret, js = xmlRequest(makeLogin(args.username, args.password))
         syslog.syslog("Login {}".format(ret))
+
+        scheduler.resume()
+
 
 
 if __name__ == "__main__":
