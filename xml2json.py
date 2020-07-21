@@ -9,5 +9,4 @@ import json
 import sys
 
 with open(sys.argv[1]) as fd:
-	xml = fd.read()
-	print(json.dumps(xmltodict.parse(xml),indent=3))
+	print(json.dumps(xmltodict.parse(fd.read()),indent=3))
