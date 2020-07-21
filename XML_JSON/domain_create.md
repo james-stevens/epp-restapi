@@ -4,8 +4,7 @@
 ## XML
 
     <create>
-      <domain:create
-       xmlns:domain="urn:ietf:params:xml:ns:domain-1.0">
+      <domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0">
         <domain:name>example.com</domain:name>
         <domain:period unit="y">1</domain:period>
         <domain:ns>
