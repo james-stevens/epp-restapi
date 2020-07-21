@@ -15,5 +15,5 @@
 
 ## JSON
 
-    { "poll": { "@op": "ack", "@id": "9" }
+    { "poll": { "@op": "ack", "@id": "9" } }
 
