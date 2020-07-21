@@ -44,25 +44,12 @@ becomes
 if an XML tag encloses just data, as well as having parameters the enclosed data
 is given the special property `#text`
 
-    <domain:contact type="admin">NIC-1013</domain:contact>
-    <domain:contact type="tech">NIC-1013</domain:contact>
-    <domain:contact type="billing">NIC-1013</domain:contact>
+    <domain:period unit="y">1</domain:period>
 
 becomes
 
-     "domain:contact": [
-        {
-           "@type": "admin",
-           "#text": "NIC-1013"
-        },
-        {
-           "@type": "tech",
-           "#text": "NIC-1013"
-        },
-        {
-           "@type": "billing",
-           "#text": "NIC-1013"
-        }
-     ]
-
+     "domain:period": {
+        "@unit": "y",
+        "#text": "1"
+     },
 
