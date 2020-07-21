@@ -1,0 +1,19 @@
+#! /bin/sh
+# (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
+# Alternative license arrangements are possible, contact me for more information
+
+if ! test -f certkey.pem
+	then
+		echo ""
+		echo "Please copy your cert/key PEM file to this directory as the file 'certkey.pem'"
+		echo ""
+		exit 0
+	fi
+
+echo -n "Username: "; read user
+if test "${user}"
+	then
+		htpasswd -Bc htpasswd ${user}
+	fi
+
+docker image build -t my_epprest .

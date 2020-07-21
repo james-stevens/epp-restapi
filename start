@@ -2,11 +2,19 @@
 # (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
 # Alternative license arrangements possible, contact me for more information
 
+if test -z "${EPP_USERNAME}" -o -z "${EPP_PASSWORD}" -o -z "${EPP_SERVER}"
+	then
+		echo "ERROR: Mandatory environment variable is missing"
+		exit 1
+	fi
+
 {
 echo "::respawn:/sbin/syslogd -n -O -"
 
+sessions=1
+if test "${EPP_SESSIONS}"; then sessions="${EPP_SESSIONS}"; fi
 x=0
-while test ${x} -lt ${EPP_SESSIONS}
+while test ${x} -lt ${sessions}
     do
         x=$(expr ${x} + 1)
         echo "::respawn:/opt/start_epprest ${x}"
