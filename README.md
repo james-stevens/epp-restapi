@@ -65,6 +65,8 @@ If you run a `docker stop` on the container, `/sbin/init` will do a clean shutdo
 
 The container is designed to run read-only. You don't have to run it this way, but it does provide a little more security.
 
+The scripts `dkmk` and `dkrun` will build & run the container, respectively.
+
 ## Required Environment
 
 It requires four environment settings, for example provided using the docker option `--env-file`, these are
@@ -113,8 +115,3 @@ log into an EPP service that you have access to, and you started the container w
 the host name in the default `certkey.pem` is `json.jrcs.net`, but this should resolve to `127.0.0.1` so the
 certificate should valdiate OK.
 
-
-## Misc
-In the `github` project, the scripts `dkmk` and `dkrun` will remake & run the container.
-
-NOTE: The entry point for the 
