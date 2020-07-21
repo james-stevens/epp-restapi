@@ -107,7 +107,8 @@ Remember, becuase your EPP login is held by the container, this HTTP Authenticat
 Assuming you have made the container with `./dkmk`, keeping all the project's default files, except you have edited the `epprest.env` to 
 log into an EPP service that you have access to, and you started the container with `./dkrun` then this should work
 
-	curl --cacert myCA.pem -d '{"hello": null }' -H 'Content-Type: application/json' https://username:password@json.jrcs.net:800/epp/api/v1.0/request | jq
+	curl --cacert myCA.pem -d '{"hello": null }' -H 'Content-Type: application/json' \
+		https://username:password@json.jrcs.net:800/epp/api/v1.0/request | jq
 
 the host name in the default `certkey.pem` is `json.jrcs.net`, but this should resolve to `127.0.0.1` so the
 certificate should valdiate OK.
