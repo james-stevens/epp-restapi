@@ -25,7 +25,7 @@ in a container. This is linked to the `docket.com` container `jamesstevens / epp
 You can still run it by hand, in Flask, just by running `./epprest.py`, but this should be used for debugging only.
 
 
-For more information in the XML to JSON translation done by `xmltodict`, see the `XML_JSON.rd`
+For more information in the XML to JSON translation done by `xmltodict`, see the `XML_JSON` directory.
 
 
 # The Container
