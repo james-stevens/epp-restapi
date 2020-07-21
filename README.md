@@ -55,7 +55,7 @@ It requires four environment settings, for example provided using the docker opt
  EPP_SERVER=<server-fqdn>
  EPP_USERNAME=<username>
  EPP_PASSWORD=<password>
- EPP_SESSIONS=<num-of-epp-sessions> (oprional, default=1)
+ EPP_SESSIONS=<num-of-epp-sessions> (optional, default=1)
  EPP_KEEPALIVE=<mins-between-keepalive> (optional, default=disabled)
 ```
 
