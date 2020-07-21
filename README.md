@@ -42,11 +42,11 @@ If you run a `docker stop` on the container, `/sbin/init` will do a clean shutdo
 
 It requires four environment settings, for example provided using the docker option `--env-file`, these are
 ```
- EPP_SERVER
- EPP_USERNAME
- EPP_PASSWORD
- EPP_SESSIONS
- EPP_KEEPALIVE
+ EPP_SERVER=<server-fqdn>
+ EPP_USERNAME=<username>
+ EPP_PASSWORD=<password>
+ EPP_SESSIONS=<num-of-epp-sessions>
+ EPP_KEEPALIVE=<mins-between-keepalive> (optional)
 ```
 
 `EPP_SERVER` - the FQDN of the EPP server to connect to. This server must have a correctly publicly verifiable certificate
@@ -55,7 +55,8 @@ It requires four environment settings, for example provided using the docker opt
 
 `EPP_SESSIONS` - the number of simultaneous EPP sessions to start - these will be load-balanced using `nginx`
 
-`EPP_KEEPALIVE` - time in minutes between sending `<hello>` requests to the EPP Server to ensure the connection is still up
+`EPP_KEEPALIVE` - time in minutes between sending `<hello>` requests to the EPP Server to ensure the connection is still up.
+If this is `0` or not present, then no keep-alive is done. NOTE: keep-alive shouldn't really be necessary as lost sessions will be seamlessly reconnected.
 
 
 ## Required Certificate
