@@ -226,6 +226,8 @@ def jsonRequest(in_js,addr):
 
 @application.route('/epp/api/v1.0/request', methods=['POST'])
 def eppJSON():
+    if flask.request.json is None:
+        return abort(400, "No JSON data was POSTed")
     return jsonRequest(flask.request.json,flask.request.remote_addr)
 
 
