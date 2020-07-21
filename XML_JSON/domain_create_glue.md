@@ -1,5 +1,7 @@
 # Create a domain with GLUE Records
 
+## XML
+
     <create>
       <domain:create xmlns:domain="urn:ietf:params:xml:ns:domain-1.0">
         <domain:name>exmaple.com</domain:name>

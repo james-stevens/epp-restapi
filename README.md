@@ -13,6 +13,10 @@ If the connection fails, it will attempt to reconnect before reporting an error 
 As the EPP service may be unavailable at times, it will be necessary for the program calling
 this API to have its own queueing & retrying system.
 
+For a full understanding of the EPP object request format, see 
+
+- (RFC 5730[https://tools.ietf.org/html/rfc5730]
+
 
 ## Difference in the object data
 
