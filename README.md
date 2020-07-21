@@ -25,6 +25,7 @@ Required software
 
 I used Python `v3.8.1`, Flask `v1.1.2` & xmltodict `v0.12.0`, but to make life easier, there is a `Dockerfile` which runs it all
 in a container. This is linked to the `docker.com` container `jamesstevens / epp-rest_api`, which gets automatically rebuilt
+based on this `github` repo.
 
 You can run a single thread by hand, in Flask, just by running `./epprest.py`, but this should be used for debugging only.
 
@@ -83,4 +84,4 @@ Remember, becuase your EPP login is held by the container, this HTTP Authenticat
 ## Misc
 In the `github` project, the scripts `dkmk` and `dkrun` will remake & run the container.
 
-For more general dev info, see `github`.
+NOTE: The entry point for the 

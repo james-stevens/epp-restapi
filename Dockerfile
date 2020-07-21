@@ -32,3 +32,5 @@ COPY htpasswd /etc/nginx/htpasswd
 COPY start start_epprest start_nginx /opt/
 COPY epprest.py /opt/
 RUN python3 -m compileall /opt/
+
+CMD [ "/opt/start" ]

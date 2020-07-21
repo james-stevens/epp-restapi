@@ -2,6 +2,13 @@
 # (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
 # Alternative license arrangements possible, contact me for more information
 
+if test -z "${EPP_USERNAME}" -o -z "${EPP_PASSWORD}" \
+	-o -z "${EPP_SERVER}" -o -z "${EPP_SESSIONS}"
+	then
+		echo "ERROR: Mandatory environment variable is missing"
+		exit 1
+	fi
+
 {
 echo "::respawn:/sbin/syslogd -n -O -"
 
