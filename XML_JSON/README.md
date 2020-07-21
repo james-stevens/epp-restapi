@@ -28,3 +28,41 @@ becomes
             ]
         },
 
+
+paramters within an XML tag are treated like properties, with the prefix `@`
+
+    <poll op="req"\>
+
+becomes
+
+    {
+        "poll": {
+            "@op" : "req"
+            }
+    }
+
+if an XML tag encloses just data, as well as having parameters the enclosed data
+is given the special property `#text`
+
+    <domain:contact type="admin">NIC-1013</domain:contact>
+    <domain:contact type="tech">NIC-1013</domain:contact>
+    <domain:contact type="billing">NIC-1013</domain:contact>
+
+becomes
+
+     "domain:contact": [
+        {
+           "@type": "admin",
+           "#text": "NIC-1013"
+        },
+        {
+           "@type": "tech",
+           "#text": "NIC-1013"
+        },
+        {
+           "@type": "billing",
+           "#text": "NIC-1013"
+        }
+     ]
+
+
