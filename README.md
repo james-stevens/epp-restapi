@@ -48,6 +48,7 @@ in a container. This is linked to the `docker.com` container `jamesstevens / epp
 based on this `github` repo.
 
 You can run a single thread by hand, in Flask, just by running `./epprest.py`, but this should be used for debugging only.
+NOTE: You will need to set up the appropriate environments variables first (see below).
 
 
 For more information in the XML to JSON translation done by `xmltodict`, see the `XML_JSON` directory.
