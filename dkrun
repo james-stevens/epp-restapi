@@ -1,3 +1,3 @@
 #! /bin/sh
 
-docker run --read-only --env-file=epprest.env -it -p 800:800 epprest /opt/start
+docker run --read-only --env-file=epprest.env -it -p 800:800 epprest

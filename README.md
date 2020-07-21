@@ -46,6 +46,7 @@ that round-robin load-balances the rest/api calls accross the EPP Sessions.
 
 If you run a `docker stop` on the container, `/sbin/init` will do a clean shutdown.
 
+The container is designed to run read-only. You don't have to run it this way, but it does provide a little more security.
 
 ## Required Environment
 
@@ -54,8 +55,8 @@ It requires four environment settings, for example provided using the docker opt
  EPP_SERVER=<server-fqdn>
  EPP_USERNAME=<username>
  EPP_PASSWORD=<password>
- EPP_SESSIONS=<num-of-epp-sessions>
- EPP_KEEPALIVE=<mins-between-keepalive> (optional)
+ EPP_SESSIONS=<num-of-epp-sessions> (oprional, default=1)
+ EPP_KEEPALIVE=<mins-between-keepalive> (optional, default=disabled)
 ```
 
 `EPP_SERVER` - the FQDN of the EPP server to connect to. This server must have a correctly publicly verifiable certificate
@@ -66,6 +67,9 @@ It requires four environment settings, for example provided using the docker opt
 
 `EPP_KEEPALIVE` - time in minutes between sending `<hello>` requests to the EPP Server to ensure the connection is still up.
 If this is `0` or not present, then no keep-alive is done. NOTE: keep-alive shouldn't really be necessary as lost sessions will be seamlessly reconnected.
+
+
+The first four are checked by the start-script, so if they are missing the container will refuse to run.
 
 
 ## Required Certificate

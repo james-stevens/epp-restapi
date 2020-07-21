@@ -25,8 +25,10 @@ http {
 
     upstream epp_servers {
 "
+sessions=1
+if test "${EPP_SESSIONS}"; then sessions="${EPP_SESSIONS}"; fi
 x=0
-while test ${x} -lt ${EPP_SESSIONS}
+while test ${x} -lt ${sessions}
 	do
 		x=$(expr ${x} + 1)
 		echo "		server unix:/ram/epprest_${x}.sock;"
