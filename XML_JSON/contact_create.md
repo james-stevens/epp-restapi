@@ -30,41 +30,41 @@
 
 ## JSON
 
-	 "create": {
-		"contact:create": {
-		   "@xmlns:contact": "urn:ietf:params:xml:ns:contact-1.0",
-		   "contact:id": "sh8013",
-		   "contact:postalInfo": {
-			  "@type": "int",
-			  "contact:name": "John O'Doe",
-			  "contact:org": "Example Inc.",
-			  "contact:addr": {
-				 "contact:street": [
-					"123 Example Dr.",
-					"Suite 100",
-					"My Desk"
-				 ],
-				 "contact:city": "Some City",
-				 "contact:sp": "VA",
-				 "contact:pc": "20166-6503",
-				 "contact:cc": "US"
-			  }
-		   },
-		   "contact:voice": {
-			  "@x": "1234",
-			  "#text": "+1.7035555555"
-		   },
-		   "contact:fax": "+1.7035555556",
-		   "contact:email": "jdoe@example.com",
-		   "contact:disclose": {
-			  "@flag": "0",
-			  "contact:voice": null,
-			  "contact:addr": null,
-			  "contact:email": null
-		   }
-		}
-	 },
-	 "clTRID": "ABC-12345"
+     "create": {
+        "contact:create": {
+           "@xmlns:contact": "urn:ietf:params:xml:ns:contact-1.0",
+           "contact:id": "sh8013",
+           "contact:postalInfo": {
+              "@type": "int",
+              "contact:name": "John O'Doe",
+              "contact:org": "Example Inc.",
+              "contact:addr": {
+                 "contact:street": [
+                    "123 Example Dr.",
+                    "Suite 100",
+                    "My Desk"
+                 ],
+                 "contact:city": "Some City",
+                 "contact:sp": "VA",
+                 "contact:pc": "20166-6503",
+                 "contact:cc": "US"
+              }
+           },
+           "contact:voice": {
+              "@x": "1234",
+              "#text": "+1.7035555555"
+           },
+           "contact:fax": "+1.7035555556",
+           "contact:email": "jdoe@example.com",
+           "contact:disclose": {
+              "@flag": "0",
+              "contact:voice": null,
+              "contact:addr": null,
+              "contact:email": null
+           }
+        }
+     },
+     "clTRID": "ABC-12345"
   }
 }
 }
