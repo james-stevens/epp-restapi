@@ -5,7 +5,7 @@ This directory gives examples of EPP requests in both XML and JSON format
 The utility `xml2json.py <file>` is provided to allow you to convert EPP's XML 
 into JSON to see what it will look like.
 
-This is odcument set is not intended as a comprehensive documentation of the EPP object format, but
+This is document set is not intended as a comprehensive documentation of the EPP object format, but
 simple to cover enough scenarios so you can understand how the EPP/XML is mapped into JSON.
 
 
@@ -38,7 +38,7 @@ becomes
         },
 
 
-paramters within an XML tag are treated like properties, with the prefix `@`
+parameters within an XML tag are treated like properties, with the prefix `@`
 
     <poll op="req"\>
 

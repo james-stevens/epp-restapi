@@ -116,5 +116,11 @@ log into an EPP service that you have access to, and you started the container w
 		https://username:password@json.jrcs.net:800/epp/api/v1.0/request | jq
 
 the host name in the default `certkey.pem` is `json.jrcs.net`, but this should resolve to `127.0.0.1` so the
-certificate should valdiate OK.
+certificate should valdiate OK, if you run the `curl` on the same jhost that is running the container.
 
+Otherwise, you can test using `wget` and apply the option `--no-check-certificate`
+
+	wget -q --no-check-certificate --post-data '{"hello":null}' -O - --header 'Content-Type: application/json' \
+		https://username:password@[your-host-name]:800/epp/api/v1.0/request | jq
+
+where `[your-host-name]` is the host name or IP Address of the container.
