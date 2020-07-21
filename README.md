@@ -99,7 +99,7 @@ By default this private certificate is used for both the `TLS` in `nginx` and as
 
 The `nginx` PEM lives in `/etc/nginx/certkey.pem` and the EPP client one lives in `/opt/certkey.pem` - potentially you could use the same one for both, if you wish.
 
-## Probably Required Login
+## Probably Required Access Control
 The REST/API is protected by user-names and passwords in the file `/etc/nginx/htpasswd`, the only default login has the user-name `username` and the password `password`. You should probably change this - using the Apache utility `htpasswd` to create a new htpasswd file.
 
 Remember, becuase your EPP login is held by the container, this HTTP Authentication is what stops anybody who wants to from registering domain names using your account.
