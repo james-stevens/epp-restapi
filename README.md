@@ -14,10 +14,10 @@ As the EPP service may be unavailable at times, it will be necessary for the pro
 this API to have its own queueing & retrying system.
 
 For a full understanding of the EPP object request format, see 
-- [RFC 5730 - General](https://tools.ietf.org/html/rfc5730),
-- [RFC 5731 - Domains](https://tools.ietf.org/html/rfc5731),
-- [RFC 5732 - Contacts](https://tools.ietf.org/html/rfc5732),
-- [RFC 5733 - Hosts](https://tools.ietf.org/html/rfc5733).
+- [RFC 5730 - General](https://tools.ietf.org/html/rfc5730)
+- [RFC 5731 - Domains](https://tools.ietf.org/html/rfc5731)
+- [RFC 5732 - Contacts](https://tools.ietf.org/html/rfc5732)
+- [RFC 5733 - Hosts](https://tools.ietf.org/html/rfc5733)
 
 
 ## Difference in the object data
