@@ -12,6 +12,8 @@ becomes
 
     { "xml-tag-name": "some data value" }
 
+With the hierarchy of relationship represented as you would expect.
+
 Where there are a series of XML tags of the same name, they become an array
 
         <domain:ns>
