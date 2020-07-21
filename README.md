@@ -28,6 +28,10 @@ You can still run it by hand, in Flask, just by running `./epprest.py`, but this
 For more information in the XML to JSON translation done by `xmltodict`, see the `XML_JSON` directory.
 
 
+the directory `Your-Container` is provided to give you an easy way to build your own customeised container based on
+the standard one.
+
+
 # The Container
 
 The container runs Python/Flask (under `gunicorn`) and `nginx` to provide a rest/api to any EPP domain registry service. The rest/api runs in `HTTPS` on port `800`.
