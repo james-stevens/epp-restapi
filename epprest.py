@@ -64,7 +64,7 @@ class Empty:
 
 
 def abort(err_no, message):
-    response = flask.jsonify({'error': message})
+    response = flask.jsonify({"error": { "message": message}})
     response.status_code = err_no
     return response
 
