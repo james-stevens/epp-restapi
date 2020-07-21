@@ -7,5 +7,5 @@ First you must copy your publicly verifiable cert/key PEM file into this directo
 Then run `./dkmk` - this will prompt you to create a username & password for your `rest/api` service, 
 before creating your container as `my_epprest`
 
-If you run this script more than once, you can just press `[return]` at the user-name prompt to retain the
+If you run `dkmk` more than once, you can just press `[return]` at the user-name prompt to retain the
 `htpasswd` file you created the previous time.
