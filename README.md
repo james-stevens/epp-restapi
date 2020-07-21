@@ -15,7 +15,7 @@ this API to have its own queueing & retrying system.
 
 For a full understanding of the EPP object request format, see 
 
-- (RFC 5730[https://tools.ietf.org/html/rfc5730]
+- (RFC 5730)[https://tools.ietf.org/html/rfc5730]
 
 
 ## Difference in the object data
