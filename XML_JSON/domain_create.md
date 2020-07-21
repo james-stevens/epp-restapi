@@ -19,36 +19,36 @@
     </create>
 
 ## JSON
-	{
-	   "create": {
-		  "domain:create": {
-			 "@xmlns:domain": "urn:ietf:params:xml:ns:domain-1.0",
-			 "domain:name": "example.com",
-			 "domain:period": {
-				"@unit": "y",
-				"#text": "1"
-			 },
-			 "domain:ns": {
-				"domain:hostObj": [
-				   "ns1.testname.com",
-				   "ns1.testname.ac"
-				]
-			 },
-			 "domain:registrant": "NIC-1013",
-			 "domain:contact": [
-				{
-				   "@type": "admin",
-				   "#text": "NIC-1013"
-				},
-				{
-				   "@type": "tech",
-				   "#text": "NIC-1013"
-				},
-				{
-				   "@type": "billing",
-				   "#text": "NIC-1013"
-				}
-			 ]
-		  }
-	   }
-	}
+    {
+       "create": {
+          "domain:create": {
+             "@xmlns:domain": "urn:ietf:params:xml:ns:domain-1.0",
+             "domain:name": "example.com",
+             "domain:period": {
+                "@unit": "y",
+                "#text": "1"
+             },
+             "domain:ns": {
+                "domain:hostObj": [
+                   "ns1.testname.com",
+                   "ns1.testname.ac"
+                ]
+             },
+             "domain:registrant": "NIC-1013",
+             "domain:contact": [
+                {
+                   "@type": "admin",
+                   "#text": "NIC-1013"
+                },
+                {
+                   "@type": "tech",
+                   "#text": "NIC-1013"
+                },
+                {
+                   "@type": "billing",
+                   "#text": "NIC-1013"
+                }
+             ]
+          }
+       }
+    }
