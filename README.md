@@ -2,11 +2,11 @@
 
 `epp-restapi` is a Python/Flask service to provide a rest/api for EPP domain registration / management.
 It does this by providing a transparent proxy to an existing EPP registry service. 
-The XML<->JSON translatio is done by `xmltodict`.
+The XML<->JSON translation is done by `xmltodict`.
 
 It can keep multiple EPP sessions open and `nginx` will load-balance between them.
 
-The session is only opened when the first request comes in and is held open. This can cause a small delay when getting a reponse
+The session is only opened when the first request comes in and is held open. This can cause a small delay when getting a response
 from the first request.
 
 If the connection fails, it will attempt to reconnect before reporting an error to the caller.
@@ -27,7 +27,7 @@ All requests should be POSTed to `/epp/api/v1.0/request`
 
 In EPP/XML
 - all requests are wrapped with `<epp><command> ... </command></epp>`
-- every transaction has a transaction-id which must be repeated back in the respose.
+- every transaction has a transaction-id which must be repeated back in the response.
 - all response are wrapped with `<epp><response> ... </response></epp>`
 
 In all three cases, these features are handled automatically by the rest/api code, so you
@@ -62,7 +62,7 @@ the standard one.
 The container runs Python/Flask (under `gunicorn`) and `nginx` to provide a rest/api to any EPP domain registry service. The rest/api runs in `HTTPS` on port `800`.
 
 All server processes are run under the `busybox` supervisor `/sbin/init`. There is one `gunicorn` process for each EPP Session and one `nginx` process
-that round-robin load-balances the rest/api calls accross the EPP Sessions.
+that round-robin load-balances the rest/api calls across the EPP Sessions.
 
 If you run a `docker stop` on the container, `/sbin/init` will do a clean shutdown.
 
@@ -105,7 +105,7 @@ The `nginx` PEM lives in `/etc/nginx/certkey.pem` and the EPP client one lives i
 ## Probably Required Access Control
 The REST/API is protected by user-names and passwords in the file `/etc/nginx/htpasswd`, the only default login has the user-name `username` and the password `password`. You should probably change this - using the Apache utility `htpasswd` to create a new htpasswd file.
 
-Remember, becuase your EPP login is held by the container, this HTTP Authentication is what stops anybody who wants to from registering domain names using your account.
+Remember, because your EPP login is held by the container, this HTTP Authentication is what stops anybody who wants to from registering domain names using your account.
 
 ## Testing the service
 
