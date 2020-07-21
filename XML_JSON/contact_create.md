@@ -17,7 +17,7 @@
             <contact:cc>US</contact:cc>
           </contact:addr>
         </contact:postalInfo>
-        <contact:voice x="1234">+1.7035555555</contact:voice>
+        <contact:voice>+1.7035555555 x1234</contact:voice>
         <contact:fax>+1.7035555556</contact:fax>
         <contact:email>jdoe@example.com</contact:email>
         <contact:disclose flag="0">
@@ -50,10 +50,7 @@
                  "contact:cc": "US"
               }
            },
-           "contact:voice": {
-              "@x": "1234",
-              "#text": "+1.7035555555"
-           },
+           "contact:voice": "+1.7035555555 x1234",
            "contact:fax": "+1.7035555556",
            "contact:email": "jdoe@example.com",
            "contact:disclose": {
@@ -63,8 +60,4 @@
               "contact:email": null
            }
         }
-     },
-     "clTRID": "ABC-12345"
-  }
-}
-}
+     }
