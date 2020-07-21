@@ -16,7 +16,7 @@ this API to have its own queueing & retrying system.
 
 ## Running this on an existing server
 
-Requires the python modules
+Required software
 - flask
 - xmltodict
 - gunicorn
