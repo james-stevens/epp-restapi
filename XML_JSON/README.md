@@ -2,6 +2,10 @@
 
 This directory gives examples of EPP requests in both XML and JSON format
 
+The utilkity `xml2json.py <file>` is provided to allow you to convert EPP's XML 
+into JSON to see what it will look like.
+
+
 ## How XML is converted
 
 At its most basic the XML is converted to JSON like this

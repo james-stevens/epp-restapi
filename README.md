@@ -14,6 +14,17 @@ As the EPP service may be unavailable at times, it will be necessary for the pro
 this API to have its own queueing & retrying system.
 
 
+## Difference in the object data
+
+In EPP/XML
+- all requests are wrapped with `<epp><command> ... </command></epp>`
+- every transaction has a transaction-id which must be repeated back in the respose.
+- all response are wrapped with `<epp><response> ... </response></epp>`
+
+In all three cases, these features are handled automatically by the rest/api code, so you
+are not required to handle any of this.
+
+
 ## Running this on an existing server
 
 Required software
