@@ -10,7 +10,6 @@ RUN ln -s /dev/shm /ram
 RUN apk add python3
 RUN apk add py-pip
 RUN apk add nginx
-RUN apk add bind-tools
 
 RUN pip install --upgrade pip
 RUN pip install gunicorn

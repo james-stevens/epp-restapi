@@ -1,34 +1,38 @@
 # epp-restapi
 
-`epp-restapi` is a Python/Flask service to provide a rest/api for EPP domain registration / management
+`epp-restapi` is a Python/Flask service to provide a rest/api for EPP domain registration / management.
+It does this by providing a transparent proxy to an existing EPP registry service. 
+The XML<->JSON translatio is done by `xmltodict`.
 
-It does this by using `xmltodict` to run a translation between XML & JSON and passing the request to an EPP session it keeps open.
-
+It can keep multiple EPP sessions open and `nginx` will load-balance between them.
 
 The session is only opened when the first request comes in and is held open. This can cause a small delay when getting a reponse
 from the first request.
 
-If the connection fails, it will attempt to reconnect
-before reporting an error to the caller. As the EPP service may be unabailable at times, it is necessary for the program calling
+If the connection fails, it will attempt to reconnect before reporting an error to the caller.
+As the EPP service may be unavailable at times, it will be necessary for the program calling
 this API to have its own queueing & retrying system.
 
 
-## Requirements
+## Running this on an existing server
 
 Requires the python modules
 - flask
 - xmltodict
+- gunicorn
+- apscheduler
+- nginx
 
 I used Python `v3.8.1`, Flask `v1.1.2` & xmltodict `v0.12.0`, but to make life easier, there is a `Dockerfile` which runs it all
-in a container. This is linked to the `docket.com` container `jamesstevens / epp-rest_api`, which gets automatically rebuilt
+in a container. This is linked to the `docker.com` container `jamesstevens / epp-rest_api`, which gets automatically rebuilt
 
-You can still run it by hand, in Flask, just by running `./epprest.py`, but this should be used for debugging only.
+You can run a single thread by hand, in Flask, just by running `./epprest.py`, but this should be used for debugging only.
 
 
 For more information in the XML to JSON translation done by `xmltodict`, see the `XML_JSON` directory.
 
 
-the directory `Your-Container` is provided to give you an easy way to build your own customeised container based on
+The directory `Your-Container` is provided to give you an easy way to build your own customised container based on
 the standard one.
 
 
