@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 # (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
-# Alternative license arrangements are possible, contact me for more information
-
+# Alternative license arrangements are possible,
+# contact me for more information
 
 import json
 import xmltodict
@@ -36,14 +36,17 @@ if "EPP_KEEPALIVE" in os.environ:
 
 
 def keepAlive():
-    jsonRequest({"hello":None},"keepAlive")
+    jsonRequest({"hello": None}, "keepAlive")
 
 
 scheduler = None
 if jobInterval > 0:
     scheduler = BackgroundScheduler(timezone=utc)
     scheduler.start(paused=True)
-    job = scheduler.add_job(keepAlive, 'interval', minutes=jobInterval, id='keepAlive')
+    job = scheduler.add_job(keepAlive,
+                            'interval',
+                            minutes=jobInterval,
+                            id='keepAlive')
 
 
 def gracefulExit():
@@ -56,6 +59,7 @@ def gracefulExit():
     conn.close()
     sys.exit(0)
 
+
 atexit.register(gracefulExit)
 
 
@@ -64,10 +68,9 @@ class Empty:
 
 
 def abort(err_no, message):
-    response = flask.jsonify({"error": { "message": message}})
+    response = flask.jsonify({"error": {"message": message}})
     response.status_code = err_no
     return response
-
 
 
 def hexId(i):
@@ -131,8 +134,8 @@ def jsonReply(conn, clTRID):
     buf = conn.recv(EPP_PKT_LEN_BYTES)
     if len(buf) == 0:
         return None, None
-    l = int.from_bytes(buf, NETWORK_BYTE_ORDER)
-    buf = conn.recv(l)
+    lgth = int.from_bytes(buf, NETWORK_BYTE_ORDER)
+    buf = conn.recv(lgth)
     if len(buf) == 0:
         return None, None
     js = xmltodict.parse(buf)
@@ -161,16 +164,14 @@ def jsonReply(conn, clTRID):
     return ret, js
 
 
-
 def xmlRequest(js):
     global conn
     clTRID, xml = makeXML(js)
     try:
         conn.sendall(xml)
         return jsonReply(conn, clTRID)
-    except:
+    except Exception as e:
         return None, None
-
 
 
 @application.route('/epp/api/v1.0/finish', methods=['GET'])
@@ -183,7 +184,7 @@ def firstDict(thisDict):
         return d.lower()
 
 
-def jsonRequest(in_js,addr):
+def jsonRequest(in_js, addr):
     global conn
     global scheduler
 
@@ -194,14 +195,16 @@ def jsonRequest(in_js,addr):
 
     t1 = firstDict(in_js)
     if t1 == "hello":
-        t2="hello"
+        t2 = "hello"
     else:
         t2 = firstDict(in_js[t1])
         if t2[0] == "@":
             t2 = in_js[t1][t2]
 
     if jobInterval > 0:
-        scheduler.reschedule_job('keepAlive', trigger='interval', minutes=jobInterval)
+        scheduler.reschedule_job('keepAlive',
+                                 trigger='interval',
+                                 minutes=jobInterval)
         scheduler.resume()
 
     ret, js = xmlRequest(in_js)
@@ -218,18 +221,17 @@ def jsonRequest(in_js,addr):
             conn = None
             return abort(400, "Lost connection to EPP Server")
 
-    syslog.syslog("User request: {} asked '{}/{}' -> {}".format(addr,t1,t2,ret))
+    syslog.syslog("User request: {} asked '{}/{}' -> {}".format(
+        addr, t1, t2, ret))
 
     return js
-
 
 
 @application.route('/epp/api/v1.0/request', methods=['POST'])
 def eppJSON():
     if flask.request.json is None:
         return abort(400, "No JSON data was POSTed")
-    return jsonRequest(flask.request.json,flask.request.remote_addr)
-
+    return jsonRequest(flask.request.json, flask.request.remote_addr)
 
 
 def connectToEPP():
@@ -239,7 +241,8 @@ def connectToEPP():
 
     syslog.openlog(logoption=syslog.LOG_PID, facility=syslogFacility)
 
-    if ("EPP_SERVER" not in os.environ or "EPP_USERNAME" not in os.environ or "EPP_PASSWORD" not in os.environ):
+    if ("EPP_SERVER" not in os.environ or "EPP_USERNAME" not in os.environ
+            or "EPP_PASSWORD" not in os.environ):
         syslog.syslog(
             "ERROR: Either server, username or password has not been specified"
         )
@@ -262,7 +265,7 @@ def connectToEPP():
         try:
             conn.connect((args.server, EPP_PORT))
             conn.setblocking(True)
-        except:
+        except Exception as e:
             conn.close()
             conn = None
             return
@@ -276,6 +279,5 @@ def connectToEPP():
         scheduler.resume()
 
 
-
 if __name__ == "__main__":
-        application.run()
+    application.run()
