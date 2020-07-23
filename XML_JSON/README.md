@@ -5,8 +5,14 @@ This directory gives examples of EPP requests in both XML and JSON format
 The utility `xml2json.py <file>` is provided to allow you to convert EPP's XML 
 into JSON to see what it will look like.
 
-This is document set is not intended as a comprehensive documentation of the EPP object format, but
+This document set is not intended as a comprehensive documentation of the EPP object format, but
 simple to cover enough scenarios so you can understand how the EPP/XML is mapped into JSON.
+
+For a full understanding of the EPP object model & request format, see
+- [RFC 5730 - General](https://tools.ietf.org/html/rfc5730)
+- [RFC 5731 - Domains](https://tools.ietf.org/html/rfc5731)
+- [RFC 5732 - Contacts](https://tools.ietf.org/html/rfc5732)
+- [RFC 5733 - Hosts](https://tools.ietf.org/html/rfc5733)
 
 
 ## How XML is converted
