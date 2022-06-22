@@ -7,6 +7,7 @@ import json
 import xmltodict
 import os
 import sys
+import errno
 import syslog
 import socket
 import ssl
@@ -17,7 +18,7 @@ from pytz import utc
 
 import flask
 
-client_pem = "/opt/certkey.pem"
+client_pem = "/run/keys/certkey.pem"
 
 syslogFacility = syslog.LOG_LOCAL6
 
@@ -49,7 +50,7 @@ if jobInterval > 0:
                             id='keepAlive')
 
 
-def gracefulExit():
+def closeEPP():
     global conn
     if conn is None:
         return
@@ -57,7 +58,11 @@ def gracefulExit():
     flask.Response(js)
     syslog.syslog("Logout {}".format(ret))
     conn.close()
-    sys.exit(0)
+
+
+def gracefulExit():
+    closeEPP()
+    sys.exit(errno.EINTR)
 
 
 atexit.register(gracefulExit)
@@ -174,9 +179,15 @@ def xmlRequest(js):
         return None, None
 
 
+@application.route('/epp/api/v1.0/close', methods=['GET'])
+def handleCloseRequest():
+    closeEPP()
+    return abort(200, "Session Closed")
+
 @application.route('/epp/api/v1.0/finish', methods=['GET'])
-def closeEPP():
+def handleFinsihRequest():
     gracefulExit()
+    return abort(200, "Server Terminated")
 
 
 def firstDict(thisDict):
@@ -201,7 +212,7 @@ def jsonRequest(in_js, addr):
         if t2[0] == "@":
             t2 = in_js[t1][t2]
 
-    if jobInterval > 0:
+    if jobInterval > 0 and scheduler is not None:
         scheduler.reschedule_job('keepAlive',
                                  trigger='interval',
                                  minutes=jobInterval)
@@ -215,7 +226,7 @@ def jsonRequest(in_js, addr):
         connectToEPP()
         if conn is None:
             return abort(400, "Failed to connect to EPP Server")
-        ret, js = xmlRequest(j)
+        ret, js = xmlRequest(in_js)
         if ret is None or js is None:
             conn.close()
             conn = None
@@ -276,7 +287,8 @@ def connectToEPP():
         ret, js = xmlRequest(makeLogin(args.username, args.password))
         syslog.syslog("Login {}".format(ret))
 
-        scheduler.resume()
+        if jobInterval > 0 and scheduler is not None:
+            scheduler.resume()
 
 
 if __name__ == "__main__":

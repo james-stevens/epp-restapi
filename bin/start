@@ -1,5 +1,5 @@
 #! /bin/sh
-# (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
+# (c) Copyright 2019-2022, James Stevens ... see LICENSE for details
 # Alternative license arrangements possible, contact me for more information
 
 if test -z "${EPP_USERNAME}" -o -z "${EPP_PASSWORD}" -o -z "${EPP_SERVER}"
@@ -17,12 +17,17 @@ x=0
 while test ${x} -lt ${sessions}
     do
         x=$(expr ${x} + 1)
-        echo "::respawn:/opt/start_epprest ${x}"
+        echo "::respawn:/usr/local/bin/start_epprest ${x}"
     done
 
-echo "::respawn:/opt/start_nginx"
+echo "::respawn:/usr/local/bin/start_nginx"
 
-} > /ram/inittab
+} > /run/inittab
 
+cp -a /opt/keys /run
+chmod 700 /run/keys
+chown -R nginx: /run/keys
+
+mkdir /run/nginx; chown nginx: /run/nginx
 
 exec /sbin/init

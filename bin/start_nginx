@@ -3,7 +3,7 @@
 # Alternative license arrangements possible, contact me for more information
 
 opts="daemon off;"
-conf="nginx_ssl.conf"
+conf="nginx.conf"
 
 {
 echo "
@@ -31,7 +31,7 @@ x=0
 while test ${x} -lt ${sessions}
 	do
 		x=$(expr ${x} + 1)
-		echo "		server unix:/ram/epprest_${x}.sock;"
+		echo "		server unix:/run/epprest_${x}.sock;"
 	done
 echo "
         }
@@ -43,8 +43,8 @@ echo "
         auth_basic \"EPP REST/API\";
         auth_basic_user_file htpasswd;
 
-        ssl_certificate      certkey.pem;
-        ssl_certificate_key  certkey.pem;
+        ssl_certificate      /run/keys/certkey.pem;
+        ssl_certificate_key  /run/keys/certkey.pem;
 
         ssl_session_cache    shared:SSL:1m;
         ssl_session_timeout  5m;
@@ -59,7 +59,7 @@ echo "
     }
 }"
 
-} > /ram/${conf}
+} > /run/${conf}
 
 sleep 1
 exec /usr/sbin/nginx -c /etc/nginx/${conf} -g "${opts}"
