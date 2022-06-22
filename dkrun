@@ -1,5 +1,5 @@
 #! /bin/sh
 
 docker run --read-only --env-file=./env -it \
-	-v /opt/github/epp-restapi/keys:/opt/keys \
-	-p 800:800 epprest
+	-p 127.0.0.1:443:443 -p 127.0.0.1:80:80 \
+	epprest

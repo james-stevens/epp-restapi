@@ -28,6 +28,11 @@ cp -a /opt/keys /run
 chmod 700 /run/keys
 chown -R nginx: /run/keys
 
+if ! test -f /run/keys/client.pem
+	then
+		cp -a /opt/keys/certkey.perm /run/keys/client.pem
+	fi
+
 mkdir /run/nginx; chown nginx: /run/nginx
 
 exec /sbin/init

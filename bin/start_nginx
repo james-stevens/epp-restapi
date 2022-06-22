@@ -1,9 +1,11 @@
 #! /bin/sh
-# (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
+# (c) Copyright 2019-2022, James Stevens ... see LICENSE for details
 # Alternative license arrangements possible, contact me for more information
 
 opts="daemon off;"
 conf="nginx.conf"
+
+if test -z "${SERVER_NAME}"; then export SERVER_NAME="json.jrcs.net"; fi
 
 {
 echo "
@@ -37,8 +39,8 @@ echo "
         }
 
     server {
-        listen 800 ssl;
-        server_name localhost;
+        listen 443 ssl;
+        server_name ${SERVER_NAME};
 
         auth_basic \"EPP REST/API\";
         auth_basic_user_file htpasswd;
@@ -52,6 +54,17 @@ echo "
         ssl_ciphers  HIGH:!aNULL:!MD5;
         ssl_prefer_server_ciphers  on;
 
+
+        location / {
+            proxy_pass http://epp_servers;
+        }
+    }
+    server {
+        listen 80;
+        server_name ${SERVER_NAME};
+
+        auth_basic \"EPP REST/API\";
+        auth_basic_user_file htpasswd;
 
         location / {
             proxy_pass http://epp_servers;
