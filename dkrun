@@ -1,5 +1,8 @@
 #! /bin/sh
 
-docker run --read-only --env-file=./env -it \
+env="./env"
+if test -f ./my-env; then env="./my-env"; fi
+
+docker run --read-only --env-file=${env} -it \
 	-p 127.0.0.1:443:443 -p 127.0.0.1:80:80 \
 	epprest
