@@ -1,5 +1,5 @@
 #! /usr/bin/python3
-# (c) Copyright 2019-2020, James Stevens ... see LICENSE for details
+# (c) Copyright 2019-2022, James Stevens ... see LICENSE for details
 # Alternative license arrangements are possible,
 # contact me for more information
 

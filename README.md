@@ -2,9 +2,9 @@
 
 `epp-restapi` is a Python/Flask service to provide a rest/api for EPP domain registration / management.
 It does this by providing a transparent proxy to an existing EPP registry service. 
-The XML<->JSON translation is done by `xmltodict`.
+The XML<->JSON translation is done by the widely available Python library `xmltodict`.
 
-It can keep multiple EPP sessions open and `nginx` will load-balance between them.
+It can keep multiple EPP sessions open and `nginx` will load-balance and fail-over your REST/EPP requests between them.
 
 The session is only opened when the first request comes in and is held open. This can cause a small delay when getting a response
 from the first request.
@@ -30,7 +30,7 @@ In EPP/XML
 - every transaction has a transaction-id which must be repeated back in the response.
 - all response are wrapped with `<epp><response> ... </response></epp>`
 
-In all three cases, these features are handled automatically by the rest/api code, so you
+In all three cases, these features are handled automatically by this rest/api code, so you
 are not required to handle any of this.
 
 
@@ -43,9 +43,8 @@ Required software
 - apscheduler
 - nginx
 
-I used Python `v3.8.1`, Flask `v1.1.2` & xmltodict `v0.12.0`, but to make life easier, there is a `Dockerfile` which runs it all
-in a container. This is linked to the `docker.com` container `jamesstevens / epp-rest_api`, which gets automatically rebuilt
-based on this `github` repo.
+I used the version that come with Alpine Linux v3.16, so to make your life easier, there is a `Dockerfile` which runs it all
+in an Alpine container. This is linked to the `docker.com` container `jamesstevens / epp-rest_api`.
 
 You can run a single thread by hand, in Flask, just by running `./epprest.py`, but this should be used for debugging only.
 NOTE: You will need to set up the appropriate environments variables first (see below).
@@ -97,27 +96,40 @@ The first four are checked by the start-script, so if they are missing the conta
 
 ## Required Certificate
 
-Included in the container is a certificate which has been created using a **private** certificate authority. The `PEM` for this private CA is included in the `github` repo.
+Included in the container is a certificate which has been created using a **private** certificate authority.
+The `PEM` for this private CA is included in the `github` repo and will be installed in the container, so
+the container can validate certificates from the private CA.
 
-By default this private certificate is used for both the `TLS` in `nginx` and as the required client certificate for the `EPP` connection. This is almost certainly **NOT** what you would want in production use, so they should probably both be replaced. It is highly likely that an external EPP server will not accept a privately signed certificate.
+By default this private certificate is used for both the `TLS` in `nginx` and as the required client
+certificate for the `EPP` connection. This is probably **NOT** what you would want in production
+use, so they should probably both be replaced. It is highly likely that an external EPP server will not
+accept a privately signed certificate.
 
-The `nginx` PEM lives in `/etc/nginx/certkey.pem` and the EPP client one lives in `/opt/certkey.pem` - potentially you could use the same one for both, if you wish.
+The `PEM` files for the client & server live in `/opt/keys` and are called  `client.pem` and `certkey.pem` respectively.
+The best way to provide your own `PEM` files is to overload an external storage are onto this direction (e.g. with `-v /some/dir:/opt/keys`)
+and load your own `PEM` files into the storage area. If you ever change your external `PEM` files, the container will notice & reload them.
 
 ## Probably Required Access Control
-The REST/API is protected by user-names and passwords in the file `/etc/nginx/htpasswd`, the only default login has the user-name `username` and the password `password`. You should probably change this - using the Apache utility `htpasswd` to create a new htpasswd file.
+The REST/API is protected by user-names and passwords in the file `/etc/nginx/htpasswd`,
+the only default login has the user name `username` and the password `password`. You should
+probably change this - using the Apache utility `htpasswd` to create a new htpasswd file, then
+overload it into the container using `-v` at start-up, or build a new container based on this one, but replacing
+`/etc/nginx/htpasswd` with what you want.
 
-Remember, because your EPP login is held by the container, this HTTP Authentication is what stops anybody who wants to from registering domain names using your account.
+Remember, because your EPP login is held by the container, this HTTP Authentication is the **ONLY** thing that
+stops anybody who wants to from registering domain names using your account (money!!).
+
 
 ## Testing the service
 
-Assuming you have made the container with `./dkmk`, keeping all the project's default files, except you have edited the `epprest.env` to 
+Assuming you have made the container with `./dkmk`, and keeping all the project's default files, except you have edited the `env` to 
 log into an EPP service that you have access to, and you started the container with `./dkrun` then this should work
 
 	curl --cacert myCA.pem -d '{"hello": null }' -H 'Content-Type: application/json' \
 		https://username:password@json.jrcs.net:800/epp/api/v1.0/request | jq
 
-the host name in the default `certkey.pem` is `json.jrcs.net`, but this should resolve to `127.0.0.1` so the
-certificate should valdiate OK, if you run the `curl` on the same host that is running the container.
+The host name in the default `certkey.pem` is `json.jrcs.net`, but this should resolve to `127.0.0.1` so the
+certificate should valdiate OK, assuming you run the `curl` on the same host that is running the container.
 
 Otherwise, you can test using `wget` and apply the option `--no-check-certificate`
 
