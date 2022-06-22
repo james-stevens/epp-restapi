@@ -1,0 +1,15 @@
+#! /bin/sh
+
+id=$(docker image ls | awk '{ if($1=="epprest") print $3 }')
+
+docker tag ${id} jamesstevens/epprest
+docker push jamesstevens/epprest
+
+ver="$1"
+if test -z "${ver}"; then ver="$(date +%Y-%m-%d)"; fi
+
+if test "$1"
+	then
+		docker tag ${id} jamesstevens/epprest:${1}
+		docker push jamesstevens/epprest:${1}
+	fi
