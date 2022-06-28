@@ -9,7 +9,12 @@ if test -z "${EPP_USERNAME}" -o -z "${EPP_PASSWORD}" -o -z "${EPP_SERVER}"
 	fi
 
 {
-echo "::respawn:/sbin/syslogd -n -O -"
+if test "${SYSLOG_SERVER}"
+	then
+		echo "::respawn:/sbin/syslogd -n -R ${SYSLOG_SERVER}"
+	else
+		echo "::respawn:/sbin/syslogd -n -O -"
+	fi
 
 sessions=1
 if test "${EPP_SESSIONS}"; then sessions="${EPP_SESSIONS}"; fi
@@ -28,9 +33,9 @@ cp -a /opt/keys /run
 chmod 700 /run/keys
 chown -R nginx: /run/keys
 
-if ! test -f /run/keys/client.pem
+if test -f /opt/keys/certkey.pem -a ! -f /run/keys/client.pem
 	then
-		cp -a /opt/keys/certkey.perm /run/keys/client.pem
+		cp -a /opt/keys/certkey.pem /run/keys/client.pem
 	fi
 
 mkdir /run/nginx; chown nginx: /run/nginx

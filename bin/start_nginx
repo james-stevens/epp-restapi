@@ -15,11 +15,10 @@ events {
     worker_connections  1024;
 }
 
-user daemon;
+error_log syslog:server=unix:/dev/log,facility=local5,tag=nginx,severity=warn;
 
 http {
-    access_log      off;
-    error_log       stderr error;
+    access_log syslog:server=unix:/dev/log,facility=local5,tag=nginx,severity=info;
     include         mime.types;
     default_type    application/octet-stream;
     sendfile        on;
@@ -37,7 +36,11 @@ while test ${x} -lt ${sessions}
 	done
 echo "
         }
+"
 
+if test -f /run/keys/certkey.pem
+	then
+		echo "
     server {
         listen 443 ssl;
         server_name ${SERVER_NAME};
@@ -59,6 +62,10 @@ echo "
             proxy_pass http://epp_servers;
         }
     }
+	"
+fi
+
+echo "
     server {
         listen 80;
         server_name ${SERVER_NAME};

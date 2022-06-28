@@ -2,4 +2,4 @@
 # (c) Copyright 2019-2022, James Stevens ... see LICENSE for details
 # Alternative license arrangements are possible, contact me for more information
 
-docker image build -t epprest .
+docker image build -t epp-restapi .
