@@ -65,7 +65,7 @@ def gracefulExit():
     sys.exit(errno.EINTR)
 
 
-atexit.register(closeEPP)
+atexit.register(gracefulExit)
 
 
 class Empty:
