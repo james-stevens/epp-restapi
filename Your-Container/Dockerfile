@@ -1,4 +1,4 @@
-FROM jamesstevens/epprest
+FROM jamesstevens/epp-restapi
 
 COPY certkey.pem /opt/keys/
 

@@ -5,4 +5,6 @@
 session="${1}"
 
 cd /opt
-exec gunicorn --bind unix:/run/epprest_${session}.sock epprest
+exec gunicorn \
+	--bind unix:/run/epprest_${session}.sock \
+	epprest

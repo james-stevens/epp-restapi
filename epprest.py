@@ -18,7 +18,7 @@ from pytz import utc
 
 import flask
 
-client_pem = "/run/keys/certkey.pem"
+client_pem = "/run/keys/client.pem"
 
 syslogFacility = syslog.LOG_LOCAL6
 
