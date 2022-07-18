@@ -97,9 +97,7 @@ def makeXML(cmd):
 
     xml = xmltodict.unparse({
         "epp": {
-            "@xmlns": "urn:iana:xml:ns:epp",
-            "@xmlns:xsi": "http://www.w3.org/2000/10/XMLSchema-instance",
-            "@xsi:schemaLocation": "urn:iana:xml:ns:epp epp.xsd",
+            "@xmlns": "urn:ietf:params:xml:ns:epp-1.0",
             verb: cmd
         }
     })
@@ -116,22 +114,20 @@ def makeLogin(username, password):
                 "version": "1.0",
                 "lang": "en"
             },
-            "svcs": {
-                "contact:svc": {
-                    "@xmlns:contact": "urn:iana:xml:ns:contact",
-                    "@xsi:schemaLocation":
-                    "urn:iana:xml:ns:contact contact.xsd"
-                },
-                "domain:svc": {
-                    "@xmlns:domain": "urn:iana:xml:ns:domain",
-                    "@xsi:schemaLocation": "urn:iana:xml:ns:domain domain.xsd"
-                },
-                "host:svc": {
-                    "@xmlns:host": "urn:iana:xml:ns:host",
-                    "@xsi:schemaLocation": "urn:iana:xml:ns:host host.xsd"
-                }
-            }
-        },
+			"svcs": {
+			"objURI": [
+				"urn:ietf:params:xml:ns:domain-1.0",
+				"urn:ietf:params:xml:ns:contact-1.0",
+				"urn:ietf:params:xml:ns:host-1.0"
+				],
+			"svcExtension": {
+				"extURI": [
+					"urn:ietf:params:xml:ns:secDNS-1.1",
+					"urn:ietf:params:xml:ns:fee-1.0"
+					]
+				}
+			}
+        }
     }
 
 
