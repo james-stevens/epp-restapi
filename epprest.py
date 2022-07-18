@@ -179,11 +179,13 @@ def xmlRequest(js):
         return None, None
 
 
+@application.route('/api/epp/v1.0/close', methods=['GET'])
 @application.route('/epp/api/v1.0/close', methods=['GET'])
 def handleCloseRequest():
     closeEPP()
     return abort(200, "Session Closed")
 
+@application.route('/api/epp/v1.0/finish', methods=['GET'])
 @application.route('/epp/api/v1.0/finish', methods=['GET'])
 def handleFinsihRequest():
     gracefulExit()
@@ -238,6 +240,7 @@ def jsonRequest(in_js, addr):
     return js
 
 
+@application.route('/api/epp/v1.0/request', methods=['POST'])
 @application.route('/epp/api/v1.0/request', methods=['POST'])
 def eppJSON():
     if flask.request.json is None:

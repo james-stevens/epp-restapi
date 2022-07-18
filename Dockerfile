@@ -10,7 +10,6 @@ RUN mkdir /opt/keys
 RUN chmod 700 /opt/keys
 COPY certkey.pem /opt/keys/client.pem
 
-COPY nginx_login.conf /etc/nginx
 COPY htpasswd /etc/nginx/htpasswd
 
 COPY epprest.py wsgi.py /opt/python/
