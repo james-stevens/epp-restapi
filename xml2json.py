@@ -15,6 +15,7 @@ if "epp" in js:
     js = js["epp"]
     if "command" in js:
         js = js["command"]
-    del js["clTRID"]
+    if "clTRID" in js:
+        del js["clTRID"]
 
 print(json.dumps(js, indent=3))
