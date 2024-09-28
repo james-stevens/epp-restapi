@@ -9,13 +9,6 @@ import json
 import sys
 
 with open(sys.argv[1]) as fd:
-    js = xmltodict.parse(fd.read())
+    js = json.load(fd)
 
-if "epp" in js:
-    js = js["epp"]
-    if "command" in js:
-        js = js["command"]
-    if "clTRID" in js:
-        del js["clTRID"]
-
-print(json.dumps(js, indent=3))
+print(xmltodict.unparse(js))

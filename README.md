@@ -23,6 +23,10 @@ For a full understanding of the EPP object request format, see
 All requests should be POSTed to `/epp/api/v1.0/request`
 
 
+NOTE: This container is based on my [general purpose python/flask container](https://github.com/james-stevens/gunicorn-flask-nginx-restapi)
+so you will need to grab that & build it first.
+
+
 ## Difference in the object data
 
 In EPP/XML

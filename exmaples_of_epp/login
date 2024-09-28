@@ -1,0 +1,22 @@
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"  xsi:schemaLocation="urn:iana:xml:ns:epp epp.xsd"> 
+  <command> 
+    <login> 
+      <clID>username</clID> 
+      <pw>password</pw> 
+      <options> 
+        <version>1.0</version> 
+        <lang>en</lang> 
+      </options> 
+      <svcs> 
+		 <objURI>urn:ietf:params:xml:ns:domain-1.0</objURI>
+		 <objURI>urn:ietf:params:xml:ns:contact-1.0</objURI>
+		 <objURI>urn:ietf:params:xml:ns:host-1.0</objURI>
+		 <svcExtension>
+			 <extURI>urn:ietf:params:xml:ns:secDNS-1.1</extURI>
+			 <extURI>urn:ietf:params:xml:ns:fee-1.0</extURI>
+		 </svcExtension>
+      </svcs> 
+    </login> 
+    <clTRID>4KabBYhZECWJWcpOIKsr</clTRID> 
+  </command> 
+</epp> 
