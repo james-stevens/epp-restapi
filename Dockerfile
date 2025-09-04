@@ -3,8 +3,7 @@
 
 FROM gunicorn-flask
 
-RUN apk add py-pip py3-xmltodict py3-tz tzdata
-RUN pip install apscheduler
+RUN apk add py-pip py3-xmltodict py3-tz tzdata py3-apscheduler
 
 RUN mkdir /opt/keys
 RUN chmod 700 /opt/keys
@@ -12,5 +11,5 @@ COPY certkey.pem /opt/keys/client.pem
 
 COPY htpasswd /etc/nginx/htpasswd
 
-COPY epprest.py wsgi.py /opt/python/
+COPY python /opt/python/
 RUN python3 -m compileall /opt/python
