@@ -133,3 +133,8 @@ log into an EPP service that you have access to, and you started the container w
 
 The host name in the default `certkey.pem` is `json.jrcs.net`, but this should resolve to `127.0.0.1` so the
 certificate should valdiate OK, assuming you run the `curl` on the same host that is running the container.
+
+
+If you want to try something more complex, this is what a `domain:check` would look like
+
+	{ "check": { "domain:check": { "@xmlns:domain": "urn:ietf:params:xml:ns:domain-1.0", "domain:name": "example.com" } } }
