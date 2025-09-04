@@ -63,7 +63,7 @@ the standard one.
 
 # The Container
 
-The container runs Python/Flask (under `gunicorn`) and `nginx` to provide a rest/api to any EPP domain registry service. The rest/api runs in `HTTPS` on port `800`.
+The container runs Python/Flask (under `gunicorn`) and `nginx` to provide a rest/api to any EPP domain registry service. The rest/api runs in `HTTP` on port `80`.
 
 All server processes are run under the `busybox` supervisor `/sbin/init`. There is one `gunicorn` process for each EPP Session and one `nginx` process
 that round-robin load-balances the rest/api calls across the EPP Sessions.
