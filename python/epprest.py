@@ -114,19 +114,19 @@ def makeLogin(username, password):
                 "version": "1.0",
                 "lang": "en"
             },
-			"svcs": {
-			"objURI": [
-				"urn:ietf:params:xml:ns:domain-1.0",
-				"urn:ietf:params:xml:ns:contact-1.0",
-				"urn:ietf:params:xml:ns:host-1.0"
-				],
-			"svcExtension": {
-				"extURI": [
-					"urn:ietf:params:xml:ns:secDNS-1.1",
-					"urn:ietf:params:xml:ns:fee-1.0"
-					]
-				}
-			}
+            "svcs": {
+            "objURI": [
+                "urn:ietf:params:xml:ns:domain-1.0",
+                "urn:ietf:params:xml:ns:contact-1.0",
+                "urn:ietf:params:xml:ns:host-1.0"
+                ],
+            "svcExtension": {
+                "extURI": [
+                    "urn:ietf:params:xml:ns:secDNS-1.1",
+                    "urn:ietf:params:xml:ns:fee-1.0"
+                    ]
+                }
+            }
         }
     }
 
@@ -285,6 +285,11 @@ def connectToEPP():
 
         ret, js = xmlRequest(makeLogin(args.username, args.password))
         syslog.syslog("Login {}".format(ret))
+        if ret >= 2000:
+            syslog.syslog(f"Login Failed: ${js}")
+            conn.close()
+            conn = None
+            return
 
         if jobInterval > 0 and scheduler is not None:
             scheduler.resume()
