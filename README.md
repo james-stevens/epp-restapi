@@ -129,15 +129,7 @@ stops anybody who wants to from registering domain names using your account (mon
 Assuming you have made the container with `./dkmk`, and keeping all the project's default files, except you have edited the `env` to 
 log into an EPP service that you have access to, and you started the container with `./dkrun` then this should work
 
-	curl --cacert myCA.pem -d '{"hello": null }' -H 'Content-Type: application/json' \
-		https://username:password@json.jrcs.net:800/epp/api/v1.0/request | jq
+	curl -Ss -d '{"hello": null }' -H 'Content-Type: application/json' http://username:password@127.0.0.1/api/epp/v1.0/request
 
 The host name in the default `certkey.pem` is `json.jrcs.net`, but this should resolve to `127.0.0.1` so the
 certificate should valdiate OK, assuming you run the `curl` on the same host that is running the container.
-
-Otherwise, you can test using `wget` and apply the option `--no-check-certificate`
-
-	wget -q --no-check-certificate --post-data '{"hello":null}' --header 'Content-Type: application/json' \
-		-O - https://username:password@[your-host-name]:800/epp/api/v1.0/request | jq
-
-where `[your-host-name]` is the host name or IP Address of the container.
